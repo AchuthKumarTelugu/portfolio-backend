@@ -1,0 +1,131 @@
+front-end:
+used react-router-dom from home page routing
+made header component
+in pages : home contains index.js(which is primary file for it),remaining files indicates ,those are present in home page
+***IMPORTANT*** made primary,secondary,tertiary colors in tailwind.config.js-->extend-->colors:{
+    primary:....
+}
+made intro page inside home
+gave padding to y-axis for div containing intro so that we can squeeze to middle
+
+i made about component for about me section
+i made section title component for getting pre-styled titles , in which i have to insert title as prop
+***IMPORTANT*** for animation images i used lottieFiles and to use any animation --> save it collections and there copy script tag and animaiton link
+
+for responsive design,go to customising screens in tailwind to scroll down to max-width breakpoints and copy screen object to your tailwind.config
+kept only small and lg ,increased small to 1000px ,sm:for mobiles,md:for tablets
+adjusted data according to screen size
+
+experiences component:
+made fake data stored in experiences.js and made component Experirences.jsx
+***IMPORTANT*** to get shading effect on background ,first i gave bg some color and reduced its opacity and kept left border to it
+to generate data based on period click and i created selectedIndex useState and whenever i clicked period div ,i set that index to its current index and show data related to it
+made it responsive
+
+project component:
+raw data in projects file in resources and made an exact replica of experiences component for similarity and generated raw data with the help of chatgpt
+
+made contact component:
+***IMPORTANT*** to display the json object as it in web ,we have to use JSON.stringify(object,null,2) ,null-no transformation function is called,2-indicates 2 spaces for indentation ,enclosed in pre tag which preserves spaces and line breaks
+***IMPORTANT*** imported image as import contactImage from 'path'  and passed it to src of img tag
+***IMPORTANT*** to download animation images use unDraw website
+
+completed footer :
+where i made div as line and decreased opacity of text below it
+
+***IMPORTANT*** making side bar which contains all websites link only for web view:
+for icons we use remix icons ,because only by icons we can paste icons ,for cdn search for their github link
+made icons list and gave them position fixed at left-0 bottom-0 and padding -left
+
+desgining loader button:
+making fixed h-screen(full) ,to get it middle ,flex items-center,justify-center ,inset-0 indicates :top:0,bottom:0,left:0,right:0 and increased its zindex,
+based on loading condition,i will show the component
+
+logic behind loading animation:
+***IMPORTANT*** we will show loader component based on loadingStatus which is intially true
+but whenever component is loading after a gap of some milliseconds we will set condition false ,during that gap loader will load due to true,later ,not shown due to false
+
+to desing scroll bar ,i took google help,code is in index.css
+
+refer index.css for scroll bar animation and loader animation
+
+
+part-1 static website completed
+
+part-2 dynamic website started:
+setup for express and nodejs completed 
+connected to db using mongoose and connection is made in config->dbConfig
+
+to make website dynamic ,we should retreive data from database,to do that we created different modals for different components in home page
+
+inserting all data into modals of db and code is in staticData.js and made all static data,uploaded data into mongodb after formatted them in json format by formatter online
+
+created get router form /api/portfolio and provided get request to get all portfolio data
+
+i found a bug in mongodb , it by default stores collection name in plural form ,that means if want to name collection as rule ,mongodb stores it as rules and make it lower case
+
+install use cors on backend ,so that frontend and backend can communicate with each other,install axios,redux,react-redux ,redux-toolkit on frontend for data managment,instead of cors ,we can mention proxy:backend-server url in package.json of frontend,the advantage of proxy is in any request you dont need to write localhost:portno,we can change one place in future,so i prefer proxy over cors
+
+fetched data from frontend using useEffect and axios
+
+created redux file ,created slice using createSlice and its slice.actions contains all the reducers(actions)
+const dispatch=useDispatch() to dispatch actions
+useSelector(state=>state.root) to acess state
+
+after retreiving data from backend , inserting that data into modules ,making the data dynamic,logic for loader is before api calling we use showLoading action-creators and after calling use HideLoading
+
+to build admin panel,we will be using antdesing (antd), ***toast message are line notification small bars,to install antd -> npm i antd,used tabs to switch different tabs like adminIntro,adminExperiences,
+
+ made admin intro with forms component from antdesign ,to add form element use Form.item inside insert input element,to get label for it use label property for Form.item along with name for it,layout for Form for label and input vertically,onFinish for Form is called whenever form is submitted,intialValues of form gives its intial values derived from 
+
+ updated data and new:true indicates returns the new document,upsert:true indicates if there is no document and creates new one,if $set is mentioned,it only change specified field,or else if you specify a body,it replaces it with old body and created a request at backend which updates intro and show us updated successfully message
+ my backend server cant read my req.body ,it cant read my json,so i used app.use(express.json())
+after data is updated,we will use message from antd to display response message
+
+similarly done the same thing for about
+
+designing experiences tab by retireving data and creating modal using <Modal/>
+Modal-> visible=true : shows modal,title=titleData :gives title,footer={null} removes bydefault ok,cancel buttons,made the logic so that on clicking edit or add it shows popup and on clicking cancel it will close ,based on selectedItemForEdit data will be edited or added
+made add request(post) for adding data in mongodb using new Experience(data) and exp.save() and send success message
+logic for add exp and edit exp :whenver clicked ,go to open modal ,where it has value as arg,for add exp it is null,for edit it is value,in function we set that recieved value as selectedItemForEdit and setShowModal as true 
+
+i problem i faced is whatever the card i clicked the data in popup is same ,becoz all data shares same state,to get seperate state for each ones,here is the approach
+
+we are writing a logic for reloading data,similarly for loading ,making useEffect,inside which on reloadingData true it should do getPortofolioData,also after fetching data,we will ReloadData(false),after making any add or delete operations we will ReloadData(true)
+creating post request for update exp and delete exp and added delete functionality
+
+problem:data in form is not updated ,whenever i click other card due to intialValues property,thats why we use setFieldsValue() for form that has useRef,resetFields() will remove all data
+completed similarly for projects and about
+
+creating login form to acess admin panel and username:achuthkumar.telugu123@gmail.com,password:achuth@admin and made requests for creating login and testing login details based on result if success ,it will send message,token and it is stored in frontend,so when user goes to admin it first checks jwt token if not present it is redirect to admin-login panel
+
+hosting backend data on render,dashboard->plus->webservices
+
+github file link for mentors:https://github.com/sathyaprakash195 ->repositaries->mern-portofolio-udemy
+now to deploy this project on "heroku" which host out websites ,we need to write a configuration 
+import path module path=require('path')
+//checking if deployment running environment is production
+if(process.env.NODE_ENV === "production") 
+{    //give frontend-path name
+    app.use(express.static(path.join(__dirname, "../frontend-portfolio/build")));
+    app.get("*", (req, res) => {
+        res.sendFile(path.join(__dirname, "../frontend-portfolio/build/index.html"));
+    } );
+}
+
+copy this stuff
+"scripts": {
+    "client-install": "npm install --prefix frontend-portfolio",
+    "server": "nodemon server.js",
+    "client": "npm run dev --prefix client",
+    "dev": "concurrently \"npm run server\" \"npm run client\"",
+    "start": "node server.js",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+  }
+
+install concurrently package and run npm run build on frontend to create dist folder,the above heroku script is specific to heroku
+"engines": {
+    "node": "v18.16.0",
+    "npm":"9.5.1"
+  } in package.json
+
